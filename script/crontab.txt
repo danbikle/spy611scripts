@@ -1,0 +1,12 @@
+# ~/spy611/script/crontab.txt
+# 12:45pm m-f noon.bash
+# 13:10pm m-f noon.bash
+# 8pm     m-f night.bash
+# 45  6 * * mon,tue,wed,thu,fri /home/dan/spy611/script/dan.bash dgap.bash  > /tmp/dgap_bash.txt 2>&1
+47 19 * * mon,tue,wed,thu,fri /home/dan/spy611/script/dan.bash noon.bash  > /tmp/noon_bash.txt 2>&1
+10 20 * * mon,tue,wed,thu,fri /home/dan/spy611/script/dan.bash noon.bash  > /tmp/noon_bash.txt 2>&1
+59 6 * * tue,wed,thu,fri,sat /home/dan/spy611/script/dan.bash night.bash > /tmp/night_bash.txt 2>&1
+## Entry below replaced by:
+## ~/cjb4/fx/loop_many.bash
+## 59 * * * * /home/dan/cjb4/fx/dan.bash getcsv.bash > /tmp/getcsv_bash.txt 2>&1
+# end

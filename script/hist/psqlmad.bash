@@ -1,0 +1,1 @@
+../psqlmad.bash
