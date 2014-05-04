@@ -1,5 +1,7 @@
 # 30 April 2014
 # Peter Li
+# Robert Sloan May 3, 2014 modified to download up to current date
+
 
 rm(list = ls())
 
@@ -8,7 +10,8 @@ library(manipulate)
 # N.B. Default URL form website sorts descending
 # url <- 'http://www.quandl.com/api/v1/datasets/YAHOO/INDEX_GSPC.csv?&trim_start=1950-01-03&trim_end=2014-04-29&sort_order=desc'
 
-url <- 'http://www.quandl.com/api/v1/datasets/YAHOO/INDEX_GSPC.csv?&trim_start=1950-01-03&trim_end=2014-04-29&sort_order=asc'
+# modified to download everything up to the current date (R. Sloan)
+url <- paste("http://www.quandl.com/api/v1/datasets/YAHOO/INDEX_GSPC.csv?&trim_start=1950-01-03&trim_end=",Sys.Date(),"&sort_order=desc",sep="")
 
 sp500 <- read.csv(url, colClasses = c('Date' = 'Date'))
 
