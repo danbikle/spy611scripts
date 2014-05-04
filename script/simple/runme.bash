@@ -16,3 +16,10 @@
 
 # I have data, now I train the machine:
 ./psqlmad.bash -f logregr_train.sql
+
+# Now the machine can predict:
+./psqlmad.bash -f predict_oos_data.sql
+
+echo Compare the above predictions to the prices here:
+echo http://finance.yahoo.com/q/hp?s=^GSPC+Historical+Prices
+echo Are the predictions mostly true?
