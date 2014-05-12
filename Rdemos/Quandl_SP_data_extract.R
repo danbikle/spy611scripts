@@ -1,32 +1,48 @@
 # 30 April 2014
 # Peter Li
 # Robert Sloan May 3, 2014 modified to download up to current date
-
+# PL 11 May 2014: S&P 500 tweaks; lags and leads to reflect trading sessions; lapply() code
 
 rm(list = ls())
 
-library(manipulate)
+library(manipulate)  # RStudio specific code
 
-# N.B. Default URL form website sorts descending
-# url <- 'http://www.quandl.com/api/v1/datasets/YAHOO/INDEX_GSPC.csv?&trim_start=1950-01-03&trim_end=2014-04-29&sort_order=desc'
+# This is the earliest date in Yahoo data
+start.date <- "1950-01-03"
 
-# modified to download everything up to the current date (R. Sloan)
-url <- paste("http://www.quandl.com/api/v1/datasets/YAHOO/INDEX_GSPC.csv?&trim_start=1950-01-03&trim_end=",Sys.Date(),"&sort_order=desc",sep="")
+# Sent end date as current date (R. Sloan)
+end.date <- Sys.Date()
 
-sp500 <- read.csv(url, colClasses = c('Date' = 'Date'))
+# To set a custom end date 
+# end.date <- "2014-01-31"
+
+# N.B. Default URL from website sorts descending, "desc", switched to "asc"
+url <- paste0(
+   "http://www.quandl.com/api/v1/datasets/YAHOO/INDEX_GSPC.csv?&trim_start=", 
+   start.date, "&trim_end=", end.date, "&sort_order=asc")
+
+sp500 <- read.csv(url, colClasses = c("Date" = "Date"))
+
+## Graphs
 
 plot(sp500$Date, sp500$Close, type = "l")
 
+# RStudio specific code
 manipulate(
   plot(sp500$Close[x.min:(x.min + x.size)], type = "l", pch = "."),
   x.min = slider(0,nrow(sp500), initial = 10000),
   x.size = slider(1,nrow(sp500), initial = 1000)
 )
 
-## Parameters ##
+## Lags, Leads and Moving Avg Window Parameters ##
 
-lag.days <- c(2, 7, 14, 30, 60)
-lead.days <- c(1, 2, 7)
+# calendar days
+# lag.days <- c(2, 7, 14, 30, 60)
+# lead.days <- c(1, 2, 7)
+
+# trading sessions (Bikle approximations)
+lag.days <- c(2, 5, 10, 20, 40)
+lead.days <- c(1, 2, 5)
 moving.avg.days <- 100
 
 close.id <- "Close"
@@ -46,7 +62,6 @@ var.names <- c("lag_cp2d", "lag_cp1w", "lag_cp2w", "lag_cp1m", "lag_cp2m",
 
 # appox 90 seconds #
 
-
 output <- data.frame(matrix(0, nrow(sp), length(var.names)))
 
 for (i in seq_along(sp$Date)) {
@@ -59,6 +74,22 @@ for (i in seq_along(sp$Date)) {
 
 names(output) <- var.names
 isp500 <- cbind(sp[-ncol(sp)], output)
+
+
+# ----------------------- lapply() version ----------------------- #
+
+output <- lapply(seq_along(sp$Date), function(i) {
+  lag.close <- sp500[sp500$idx %in% (sp[i, "idx"] - lag.days), close.id]
+  ma.window <- (sp[i, "idx"] - moving.avg.days):(sp[i, "idx"] - 1)
+  ma.100 <- mean(sp500[ma.window, close.id])
+  lead.close <- sp500[sp500$idx %in% (sp[i, "idx"] + lead.days), close.id]
+  c(lag.close, ma.100, lead.close)
+})
+
+output <- do.call("rbind", output)
+colnames(output) <- var.names
+isp500 <- cbind(sp[-ncol(sp)], output)
+
 
 # ----------------------- mclapply() version ----------------------- #
 
