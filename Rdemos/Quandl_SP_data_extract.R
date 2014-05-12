@@ -10,7 +10,7 @@ library(manipulate)  # RStudio specific code
 # This is the earliest date in Yahoo data
 start.date <- "1950-01-03"
 
-# Sent end date as current date (R. Sloan)
+# Set end date as current date (R. Sloan)
 end.date <- Sys.Date()
 
 # To set a custom end date 
@@ -41,6 +41,7 @@ manipulate(
 # lead.days <- c(1, 2, 7)
 
 # trading sessions (Bikle approximations)
+# https://github.com/danbikle/spy611scripts/blob/master/script/cr_my_vectors.sql#L22
 lag.days <- c(2, 5, 10, 20, 40)
 lead.days <- c(1, 2, 5)
 moving.avg.days <- 100
