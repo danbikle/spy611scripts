@@ -2,9 +2,8 @@ This file is a screen dump of me running the sql script:
 
 horiz.sql
 
-dan@cen112 ~/spy611/script $ 
-dan@cen112 ~/spy611/script $ 
-dan@cen112 ~/spy611/script $ ./psqlmad.bash -f horiz.sql
+dan@cen112 ~/spy611scripts/script $ 
+dan@cen112 ~/spy611scripts/script $ ./psqlmad.bash -f horiz.sql
 --
 -- ~/spy611/script/horiz.sql
 --
@@ -56,9 +55,9 @@ MAX(mx52date) mx52date
 ,mx52
 FROM h12
 GROUP BY ydate,cp,mx52
-ORDER BY ydate;
-SELECT 16210
+ORDER BY ydate
 ;
+SELECT 16210
 -- Now for each date I know the 52 week high and I know the date of that high.
 -- For each row, I can now calculate horizontal distance between today
 -- and the date of the last 52 week high.
@@ -72,9 +71,9 @@ ydate
 ,mx52
 ,ydate - mx52date horiz_dist_mx52
 FROM h14
-ORDER BY ydate;
-SELECT 16210
+ORDER BY ydate
 ;
+SELECT 16210
 -- Lets look at the distribution of horiz_dist_mx52.
 -- I expect the min to be near 0.
 -- I expect the max to be near 365.
@@ -100,9 +99,9 @@ ydate
 ,horiz_dist_mx52
 ,100 * (LEAD(cp) OVER (ORDER BY ydate) - cp) / cp pct_gain
 FROM h16
-ORDER BY ydate;
-SELECT 16210
+ORDER BY ydate
 ;
+SELECT 16210
 -- Look for simple relationships between horiz_dist_mx52 and pct_gain
 SELECT COUNT(pct_gain),MIN(ydate),MAX(ydate),CORR(horiz_dist_mx52, pct_gain) FROM h18;
  count |    min     |    max     |         corr         
@@ -132,5 +131,4 @@ SELECT COUNT(pct_gain),MIN(ydate),MAX(ydate),AVG(pct_gain) FROM h18 WHERE horiz_
 -- Homework:
 -- Write a similar script which studies horizontal distance between
 -- today and data of last 52 week low.
-dan@cen112 ~/spy611/script $ 
-dan@cen112 ~/spy611/script $ 
+dan@cen112 ~/spy611scripts/script $ 

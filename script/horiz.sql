@@ -50,7 +50,7 @@ MAX(mx52date) mx52date
 ,mx52
 FROM h12
 GROUP BY ydate,cp,mx52
-ORDER BY ydate;
+ORDER BY ydate
 ;
 
 -- Now for each date I know the 52 week high and I know the date of that high.
@@ -67,7 +67,7 @@ ydate
 ,mx52
 ,ydate - mx52date horiz_dist_mx52
 FROM h14
-ORDER BY ydate;
+ORDER BY ydate
 ;
 
 -- Lets look at the distribution of horiz_dist_mx52.
@@ -92,7 +92,7 @@ ydate
 ,horiz_dist_mx52
 ,100 * (LEAD(cp) OVER (ORDER BY ydate) - cp) / cp pct_gain
 FROM h16
-ORDER BY ydate;
+ORDER BY ydate
 ;
 
 -- Look for simple relationships between horiz_dist_mx52 and pct_gain
