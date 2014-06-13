@@ -1,0 +1,38 @@
+Create S&P500 CSV file from quandl.com
+========================================================
+R Markdown file    
+install.packages("knitr")    
+load into R studio and click 'Knit HTML' in above code in title bar    
+
+Peter Li - 30 April 2014 original    
+Robert Sloan - May 3, 2014 modified to download up to current date    
+       June 12, 2014 shortened to just get the S&P500 data into file GSPC.csv    
+
+R initialization
+```{r initialization}
+rm(list = ls())   # Clean start.  Remove any existing objects.
+# install.packages("manipulate") needs to be run once to install manipulate
+library(manipulate) # Used to interactivly look at data
+```
+
+Get S&P500 Data from quandl.com.  Download everything up to the current date 
+```{r Get Data, cache=TRUE}
+url <- paste("http://www.quandl.com/api/v1/datasets/YAHOO/INDEX_GSPC.csv?&trim_start=1950-01-03&trim_end=",Sys.Date(),"&sort_order=desc",sep="")
+sp500 <- read.csv(url, colClasses = c('Date' = 'Date'))
+```
+
+Save S&P500 data  in file GSPC.csv
+```{r Save File}
+# set the working directory to where you place the GSPC.csv data file
+setwd("/Users/Robert/Dropbox/Class/Mr Stock Market meet Mr Data Scientist/data")
+# Write the file
+write.table(sp500,  file="GSPC.csv", sep=",",row.names=FALSE)
+```
+
+Plot S&P500 data
+```{r Plot Data}
+# to reverse this so it looks more usual
+index <- nrow(sp500):1
+# here's price data in left to right chronological starting low and growing
+plot(sp500$Close[index], pch=".",main="S&P500 Data",ylab="Closing Price in Dollars")  
+```
