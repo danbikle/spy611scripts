@@ -53,10 +53,9 @@ wlag1 = [mynans close(1:end - lag)']';
 % Here is the feature I want, normalized 1 week lag:
 n1wlagd = (close - wlag1) ./ wlag1;
 
-% I want 1 week lag but from a week ago:
-wlag2 = [mynans wlag1(1:end - lag)']';
-% Here is the feature I want, normalized 1 week lag, but from a week ago:
-n2wlagd = (wlag1 - wlag2) ./ wlag2;
+% Next feature,
+% I want 1 week lag, but from a week ago:
+n2wlagd = [mynans n1wlagd(1:end - lag)']';
 
 % Work towards the 2 features which are month-based.
 % Use syntax similar to the above-week-syntax:
@@ -70,9 +69,7 @@ mlag1 = [mynans close(1:end - lag)']';
 n1mlagd = (close - mlag1) ./ mlag1;
 
 % I want 1 month lag but from a month ago:
-mlag2 = [mynans mlag1(1:end - lag)']';
-% Here is the feature I want, normalized 1 month lag, but from a month ago:
-n2mlagd = (mlag1 - mlag2) ./ mlag2;
+n2mlagd = [mynans n1mlagd(1:end - lag)']';
 
 % Visualize first 60 rows:
 first60 = [n1dg1(1:60) ...
