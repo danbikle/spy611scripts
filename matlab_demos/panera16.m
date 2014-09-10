@@ -141,7 +141,7 @@ y_oos     = yvals(end-199:end-1);
 % ref:
 % http://www.mathworks.com/help/stats/mnrfit.html
 % Using matlab jargon, now I can 'fit'.
-bvals = mnrfit(xtraining,xtraining)
+bvals = mnrfit(xtraining,ytraining)
 
 % Lets see how it reacts when it sees a fake-down-day of -10 pct
 fake_x_oos = [ ...
@@ -165,4 +165,8 @@ pihat = mnrval(bvals,fake_x_oos)
 
 % I am interested in the 2nd probability.
 % It is the probability that tomorrow will be an up day.
+
+% I should see something like this:
+% pihat =
+%   0.2851    0.7149
 
