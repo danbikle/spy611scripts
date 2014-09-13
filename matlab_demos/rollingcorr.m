@@ -1,12 +1,29 @@
-% Derived from:
-% http://compgroups.net/comp.soft-sys.matlab/rolling-correlation/409194
+% I use this funcion to calculate a rolling-correlation of 2 vectors.
 
-function RC = rollingcorr(myx, myy, window)
-cmat = [myx myy]; % Create correlation matrix
-RC = size(window:length(cmat)); % Pre-allocate matrix to hold the rolling correlation
+% Demo:
+% 
+% demox = [1 2 3 4 5]'
+% demoy = [1 2 3 2.2 3.3]'
+% demowindow = 3
+% myrollcorr = rollingcorr(demox, demoy, demowindow)
+% I should see:
+% myrollcorr =
+%        0         0    1.0000    0.1890    0.2638
 
-for i = window:length(cmat) 
-    matx = cmat(i-window+1:i,1:2); % Trying to make moving 5x2 matrix from cmat
-    matxc = corrcoef(matx); % 2x2 Correlation matrix
-    RC(i) = matxc(1,2); % Pull out xy correlation value
+function myrcorr = rollingcorr(myx, myy, window)
+% assume length(myx) <= length(myy)
+
+% I return this:
+myrcorr = [];
+
+% x1 is left window boundry.
+% x2 is right window boundry.
+x1 = 1;
+x2 = x1+window-1;
+while ( x2 <= length(myx))
+  shortx = myx(x1:x2);
+  shorty = myy(x1:x2);
+  myrcorr(x2) = corr(shortx, shorty);
+  x1 = x1 + 1;
+  x2 = x2 + 1;
 end
