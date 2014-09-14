@@ -1,7 +1,5 @@
 % /a/ks/b/matlab/cr_ip.m
 
-% under construction
-
 % Using  25 years of training data starting in 1964,
 % create 25 years of initial predictions (for years 1989 through 2014).
 % Data goes back to 1950, I might as well get it all:
@@ -147,6 +145,7 @@ myvectors.n1wg     = n1wg    ;
 
 yrs = (1989:2014)
 
+% Going forward, ip25yr will store 3 types of initial predictions and oos data:
 ip25yr = []
 for yr = yrs
   ip25yr = vertcat(ip25yr, cr_ip4yr(yr,myvectors));
@@ -158,10 +157,16 @@ size_ip25yr = size(ip25yr)
 firstr = ip25yr(1:1,:)
 lastr = ip25yr(end:end,:)
 
+% Look at 1st 3 initial predictions:
 firstr = ip25yr(1:1,1:3)
+% Look at last 3 initial predictions:
 lastr = ip25yr(end:end,1:3)
 
+% Look at 1st value of n1dg:
+firstn1dg = ip25yr(1, 10)
+
 d1 = datestr(ip25yr(1:1,19),'yyyy-mm-dd')
+
 d2 = datestr(ip25yr(end:end,19),'yyyy-mm-dd')
 
 % debug

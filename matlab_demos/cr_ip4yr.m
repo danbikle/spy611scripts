@@ -1,7 +1,5 @@
 % /a/ks/b/matlab/cr_ip4yr.m
 
-% under construction
-
 % I use this function to calculate initial LR-predictions for a specific year.
 
 % Demo:
