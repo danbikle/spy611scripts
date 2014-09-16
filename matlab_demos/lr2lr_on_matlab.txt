@@ -1,0 +1,26 @@
+~/spy611scripts/matlab_demos/lr2lr_on_matlab.txt
+
+2014-09-16
+
+lr2lr gives much better results on Matlab than it does on spy611.
+
+Plain lr gives dismal results on both (for 2014).
+
+Matlab results are here:
+
+https://github.com/danbikle/spy611scripts/blob/master/matlab_demos/rpt_algo_avg.csv
+https://github.com/danbikle/spy611scripts/blob/master/matlab_demos/rpt_algo_corr.csv
+https://github.com/danbikle/spy611scripts/blob/master/matlab_demos/rpt_algo_count.csv
+https://github.com/danbikle/spy611scripts/blob/master/matlab_demos/rpt_algo_table.csv
+
+spy611 results here:
+
+http://www.spy611.com/btc_yr/2014
+
+To reproduce this on your laptop,
+Install Matlab R2014a (8.3.0.532) 64-bit (glnxa64) February 11, 2014
+Then run panera20.m
+
+These scripts will not run on old versions of Matlab.
+
+Dan
