@@ -158,8 +158,6 @@ prob_y_oos = [pihat(:,2) y_oos];
 prob_y_oos(1:5, :)
 
 % Select from prob_y_oos where y_oos == 1.0
-% I dont know how to do this yet.
-% I probably need to convert prob_y_oos to a table.
 
 sv1 = (prob_y_oos(:, 2) == 1)
 sv2 = (prob_y_oos(:, 2) == 2)

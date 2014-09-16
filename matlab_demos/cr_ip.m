@@ -14,6 +14,9 @@ freq = 'd'
 % cp is closing-price:
 [ydate, cp, openp, lowp, highp, volume, closeadj] = StockQuoteQuery( symbl, startDate, endDate, freq);
 
+% datestr(ydate) is useful later on. Get it now:
+ydatestr = datestr(ydate,'yyyy-mm-dd');
+
 % Work towards features described here:
 % http://www.spy611.com/blog
 
@@ -30,6 +33,9 @@ bval = ones(1,wndw)/wndw;
 aval = 1
 mvgavg100 = filter(bval, aval, cp);
 
+% I want the 1st 100 values of mvgavg100 to be same as the variable I am averaging:
+mvgavg100(1:100) = cp(1:100);
+
 % Now that I have 100day mvg avg I can calculate cpma, the feature I want:
 cpma = cp ./ mvgavg100;
 
@@ -44,13 +50,14 @@ n1dg = mydiff ./ cp;
 % Now that I have n1dg, use it to work towards collecting features.
 
 % Normalized 1-Day Gain, but a day ago:
-n1dg1 = [[NaN] n1dg(1:end-1)']';
+n1dg1 = [0.0 n1dg(1:end-1)']';
+% Above, n1dg1(1) is unknown so I set it to 0.0 which is a safe value.
 
 % Normalized 1-Day Gain, but 2 days ago:
-n1dg2 = [[NaN] n1dg1(1:end-1)']';
+n1dg2 = [0.0 n1dg1(1:end-1)']';
 
 % Normalized 1-Day Gain, but 3 days ago:
-n1dg3 = [[NaN] n1dg2(1:end-1)']';
+n1dg3 = [0.0 n1dg2(1:end-1)']';
 
 % Normalized Gain over past 2 days:
 n2dlagd = n1dg1 + n1dg2;
@@ -60,32 +67,28 @@ n2dlagd = n1dg1 + n1dg2;
 
 lag = 5
 
-% I need vector of 5 NaNs:
-mynans = NaN * ones(1,lag)
-
-% Use them:
-wlag1 = [mynans cp(1:end - lag)']';
+% Estimate 1st lag elements:
+wlag1 = [cp(1:lag)' cp(1:end - lag)']';
 
 % Here is the feature I want, normalized 1 week lag:
 n1wlagd = (cp - wlag1) ./ wlag1;
 
 % Next feature,
 % I want 1 week lag, but from a week ago:
-n2wlagd = [mynans n1wlagd(1:end - lag)']';
+n2wlagd = [n1wlagd(1:lag)' n1wlagd(1:end - lag)']';
 
 % Work towards the 2 features which are month-based.
 % Use syntax similar to the above-week-syntax:
 % I want 1 month lag:
 
 lag = 20
-mynans = NaN * ones(1,lag);
-mlag1 = [mynans cp(1:end - lag)']';
+mlag1 = [cp(1:lag)' cp(1:end - lag)']';
 
 % Here is the feature I want, normalized 1 month lag:
 n1mlagd = (cp - mlag1) ./ mlag1;
 
 % I want 1 month lag but from a month ago:
-n2mlagd = [mynans n1mlagd(1:end - lag)']';
+n2mlagd = [n1mlagd(1:lag)' n1mlagd(1:end - lag)']';
 
 % Work towards collecting future data which I will then transform into 3 types of y-values:
 
@@ -118,26 +121,31 @@ yvalue1w = 1 + (n1wg > 0.00259);
 % n2mlagd
 % and yvalues: yvalue1d, yvalue2d, yvalue1w
 
-% Store them in a struct, myvectors, which I intend to act as a global datastore:
+% Store them in a table, myvectors, which I intend to act as a global datastore:
 
-myvectors.ydate    = ydate   ;
-myvectors.cp       = cp	     ;
-myvectors.cpma     = cpma    ;
-myvectors.n1dg1    = n1dg1   ;
-myvectors.n1dg2    = n1dg2   ;
-myvectors.n1dg3    = n1dg3   ;
-myvectors.n2dlagd  = n2dlagd ;
-myvectors.n1wlagd  = n1wlagd ;
-myvectors.n2wlagd  = n2wlagd ;
-myvectors.n1mlagd  = n1mlagd ;
-myvectors.n2mlagd  = n2mlagd ;
-myvectors.yvalue1d = yvalue1d;
-myvectors.yvalue2d = yvalue2d;
-myvectors.yvalue1w = yvalue1w;
-myvectors.n1dg     = n1dg    ;
-myvectors.n2dg     = n2dg    ;
-myvectors.n1wg     = n1wg    ;
-			      
+myvectors = table(...
+ydate     ...
+,ydatestr ...
+,cp       ...
+,cpma     ...
+,n1dg1    ...
+,n1dg2    ...
+,n1dg3    ...
+,n2dlagd  ...
+,n1wlagd  ...
+,n2wlagd  ...
+,n1mlagd  ...
+,n2mlagd  ...
+,yvalue1d ...
+,yvalue2d ...
+,yvalue1w ...
+,n1dg     ...
+,n2dg     ...
+,n1wg     ...
+);
+
+size_myvectors = size(myvectors)
+                              
 % I can use them to create initial predictions.
 
 % Keep in mind I need to restrict training data to 25 years in the past before each prediction.
@@ -145,28 +153,10 @@ myvectors.n1wg     = n1wg    ;
 
 yrs = (1989:2014)
 
-% Going forward, ip25yr will store 3 types of initial predictions and oos data:
-ip25yr = []
+ip25yr = table();
 for yr = yrs
   ip25yr = vertcat(ip25yr, cr_ip4yr(yr,myvectors));
 end
 
-% debug
-% Lets look at the data:
-size_ip25yr = size(ip25yr)
-firstr = ip25yr(1:1,:)
-lastr = ip25yr(end:end,:)
+% done
 
-% Look at 1st 3 initial predictions:
-firstr = ip25yr(1:1,1:3)
-% Look at last 3 initial predictions:
-lastr = ip25yr(end:end,1:3)
-
-% Look at 1st value of n1dg:
-firstn1dg = ip25yr(1, 10)
-
-d1 = datestr(ip25yr(1:1,19),'yyyy-mm-dd')
-
-d2 = datestr(ip25yr(end:end,19),'yyyy-mm-dd')
-
-% debug

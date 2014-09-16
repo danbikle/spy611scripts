@@ -8,10 +8,6 @@ format compact
 % create 25 years of initial predictions (for years 1989 through 2014)
 cr_ip
 
-% debug
-qquit
-% debug
-
 % Calculate rolling_corr values for initial-predictions vs n1dg, n2dg, and n1wg
 cr_rolling_corr
 

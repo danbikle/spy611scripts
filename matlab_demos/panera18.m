@@ -105,7 +105,7 @@ yvalue1d = (n1dg > 0.00042);
 % Now each yvalue1d is 0 or 1, add 1 to make em 1 or 2:
 yvalue1d = yvalue1d + 1;
 yvalue2d = 1 + (n2dg > 0.00089);
-yvalue1w = 1 + (n1wg > 0.00089);
+yvalue1w = 1 + (n1wg > 0.00259);
 
 % Now that I have all my 9 features:
 % cpma 

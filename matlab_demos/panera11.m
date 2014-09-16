@@ -34,4 +34,11 @@ n1dg3 = [[NaN] n1dg2(1:end-1)']'
 
 % visualize 3 features and dependent yvalue (n1dg): 
 
-threeFand1Yval = [n1dg3 n1dg2 n1dg1 n1dg]
+threeFand1Yval = [n1dg1 n1dg2 n1dg3 n1dg]
+
+% Work towards features described here:
+% http://www.spy611.com/blog
+
+n2dlagd = n1dg1 + n1dg2
+
+fourFand1Yval = [n1dg1 n1dg2 n1dg3 n2dlagd n1dg]
