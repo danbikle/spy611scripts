@@ -1,0 +1,31 @@
+.placeOrder             TWS Orders
+.twsIncomingMSG         Internal TWS-API MSG and ERR List
+IBrokers-package        R API to the Interactive Brokers Trader
+                        Workstation (TWS).
+calculateImpliedVolatility
+                        Calculate Option Values
+eWrapper                eWrapper Closure For Message Processing
+exerciseOptions         Exercise Options Contracts
+processMsg              Main TWS-API Event Manager
+reqAccountUpdates       Request Account Updates
+reqContractDetails      Request Contract Details From TWS
+reqCurrentTime          Request The Current TWS Time
+reqHistoricalData       Request Historical Data From TWS
+reqIds                  Request Next Valid Id
+reqMktData              Request Market Data Feed from TWS
+reqMktDepth             Request Market Depth Feed from TWS
+reqNewsBulletins        Subscribe or Unsubscribe To News Bulletins
+reqRealTimeBars         Request Real Time Bars from TWS
+setServerLogLevel       Enable API Logging Via TWS
+twsCALLBACK             Internal Data Callback Routine
+twsConnect              Establish, Check or Terminate a Connection to
+                        TWS or IBG
+twsConnectionTime       TWS API Utility Functions
+twsContract             Create a twsContract
+twsCurrency             Create a twsCurrency
+twsEquity               Create a twsEquity
+twsFuture               Create a twsFuture Contract
+twsOption               Create a twsContract for Options
+twsOrder                Create twsOrder Object
+twsScannerSubscription
+                        Create ScannerSubscription
