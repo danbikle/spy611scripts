@@ -4,29 +4,17 @@
 
 % spyall contains all the dates and prices I need to build vectors.
 
-spyall = fill_spyall;
+% debug
+% spyall = fill_spyall;
+% spyall = readtable('data/spyall.csv');
+% spyv   = cr_myvectors(spyall);
+spyv = readtable('data/spyv.csv');
+% debug
 
-% Build some columns I want to use to build vectors.
-% Get a copy of cp and shift it down 1 so lagging cp lines up with cp:
-cplag1 = [spyall.cp(1) spyall.cp(1:end-1)' ]' ;
+% From all my vectors,
+% Generate some in-sample and out-of-sample data suitable for Logistic Regression.
 
-% These should match:
-% spyall.cp(end-1)
-% cplag1(end)
-
-% thrice more
-cplag2 = [spyall.cp(1) cplag1(1:end-1)' ]' ;
-cplag3 = [spyall.cp(1) cplag2(1:end-1)' ]' ;
-cplag4 = [spyall.cp(1) cplag3(1:end-1)' ]' ;
-
-% Look at the end:
-cplag4(end)
-cplag3(end)
-cplag2(end)
-cplag1(end)
-spyall.cp(end-6:end)
-
-% Get a copy of cp and shift it up 1 so leading cp lines up with cp:
-cplead = [spyall.cp(2:end)' NaN]' ;
-
-spyv = spyall;
+boundry_date = datenum([2014 08 01]);
+is_size = 20123;
+oos_size = 40.0 * 2 * 24;
+[istable, oostable] = genisoos(spyv, boundry_date, is_size, oos_size);

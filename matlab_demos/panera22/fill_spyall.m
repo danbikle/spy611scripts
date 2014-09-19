@@ -1,14 +1,15 @@
 % /a/ks/b/matlab/panera22/fill_spyall.m
 
-% I use this script to fill a table named spyall with data from a newer csv file and an older csv file.
+% I use this function to help me fill a table named spyall 
+% with data from a newer csv file and an older csv file.
 % The newer file should have been filled within the last 10 or 15 minutes.
 % The older file can be as old as a month before I encounter a gap.
 
 % Demo:
 % spyall = fill_spyall;
 
-function atable = fill_spyall()
-atable = table();
+function tableout = fill_spyall()
+tableout = table();
 
 % Done already:
 % spy_since2000          = readtable('data/SPY30min_bars_since2000.csv');
@@ -33,18 +34,18 @@ spybottom = spy_recent( (spy_recent.cpdate > spytop_boundry) , {'cpdate','datest
 % If spybottom has rows, add them, else dont:
 size_spybottom = size(spybottom)
 if(size_spybottom(1) > 0)
-  atable = vertcat(spytop,spybottom);
+  tableout = vertcat(spytop,spybottom);
 else
-  atable = spytop;
+  tableout = spytop;
 end
 
 % Backup spyall to csv, eventually the backups will replace 
 % data/SPY30min_bars_since2000.csv
 
-back_date = datestr(max(atable.cpdate),'yyyy_mm_dd_HH_MM')
+back_date = datestr(max(tableout.cpdate),'yyyy_mm_dd_HH_MM')
 
 spyall_backup = strcat('data/spyall', back_date, '.csv')
 
-writetable(atable,spyall_backup)
+writetable(tableout,spyall_backup)
 
 % end
