@@ -7,11 +7,10 @@
 
 % spyv         = cr_myvectors(spyall);
 % boundry_date = datenum([2014 08 01]);
-% is_size      = 20123;
-% oos_size     = 40.0 * 2 * 24;
-% [is1table, oostable] = genisoos1(spyv, boundry_date, is_size, oos_size);
+% is_size      = 20 * 1000;
+% oos_size     = 1000;
+% isoos1tables = genisoos1(spyv, boundry_date, is_size, oos_size);
 
-% function [is1table, oostable] = genisoos1(spyv, boundry_date, is_size, oos_size)
 function structout = genisoos1(spyv, boundry_date, is_size, oos_size)
 is1table  = spyv((spyv.cpdate < boundry_date), : ) ;
 oos1table = spyv((spyv.cpdate > boundry_date), : ) ;
@@ -19,20 +18,22 @@ oos1table = spyv((spyv.cpdate > boundry_date), : ) ;
 size_is1table  = size(is1table);
 size_oos1table = size(oos1table);
 
-is1table  = is1table( end-size_is1table(1) +1:end , : );
-oos1table = oos1table(end-size_oos1table(1)+1:end , : );
+if(size_is1table(1) > is_size)
+  % Make it smaller by truncating older observations:
+  is1table  = is1table( end-is_size+1:end , : );
+end
+
+if(size_oos1table(1) > oos_size)
+  % Make it smaller by truncating older observations:
+  oos1table  = oos1table( end-oos_size+1:end , : );
+end
 
 % Add weight to the newer rows in is1table.
-% Assume I start with 20123 rows or more:
+is1table_weighted = weighttable(is1table);
 
-w1 = is1table( end-1*5000:end , : );
-w2 = is1table( end-2*5000:end , : );
-w3 = is1table( end-3*5000:end , : );
-
-is1table = vertcat(is1table,w1,w2,w3);
-
-structout.is1table  = is1table;
-structout.oos1table = oos1table;
+structout.is1table          = is1table;
+structout.is1table_weighted = is1table_weighted;
+structout.oos1table         = oos1table;
 
 % done
 

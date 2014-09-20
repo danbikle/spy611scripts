@@ -23,12 +23,10 @@ function tableout = predictnow(oostable, myfeatures, mybvalues)
 x_oos_t = oostable(:, myfeatures);
 x_oos   = table2array(x_oos_t);
 pihat   = mnrval(mybvalues, x_oos);
+upprob1 = pihat(:,2);
 
-tableout           = table();
-tableout.cpdatestr = oostable.datestr2;
-tableout.cp        = oostable.cp;
-tableout.upprob    = pihat(:,2);
-tableout.pct1hg    = oostable.pct1hg;
+tableout         = oostable;
+tableout.upprob1 = upprob1 ;
 
 %done
 
