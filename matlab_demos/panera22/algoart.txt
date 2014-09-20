@@ -1,0 +1,75 @@
+/a/ks/b/matlab/panera22/algoart.txt
+
+Ascii art to help visualize my Logistic Regression fed to Logistic Regression algo.
+
+                  older                                                 newer
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+| spyv holds all my vectors                                                                        |
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+
+I split spyv, I have this:
+                                                                   boundry1
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+|                                 is1 20,000 observations             |  oos1 1,000 observations   |
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+
+I calculate bvalues1 from is1.
+I calculate predictions1 from bvalues1 and oos1.
+I report on effectiveness of of predictions1.
+
+Ignore oos1 for now.
+I Specify boundry of divide of is1-data into is2-data and oos2-data.
+From is1-data and boundry2 generate is2-data, oos2-data:
+
+                            boundry2                               boundry1
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+| is2 10,000 observations      | oos2 10,000 observations             |  oos1 1,000 observations   |
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+
+
+I Calculate LR-bvalues into bvalues2.
+I Calculate predictions2.
+I Merge predictions2, corrp, and oos2-data into is3-data.
+is2 no longer needed, I ignore is2:
+
+                             boundry2                              boundry1
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+| Now ignored                   | is3 10,000 observations             |  oos1 1,000 observations   |
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+
+
+I Declare a copy of oos2-data to be is4-data:
+
+                             boundry2                              boundry1
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+| Now ignored                   | is4 10,000 observations             |  oos1 1,000 observations   |
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+
+
+From is4 calculate LR-bvalues into bvalues4.
+I Calculate predictions41 from bvalues4 and oos1-data.
+I Merge predictions41 with oos1-data into oos3-data:
+
+                             boundry2                              boundry1
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+| Now ignored                   | is4 10,000 observations             |  oos3 1,000 observations   |
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+
+
+I replace is4-data with is3-data:
+
+                             boundry2                              boundry1
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+| Now ignored                   | is3 10,000 observations             |  oos3 1,000 observations   |
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+From is3-data, Calculate LR-bvalues into bvalues3.
+
+
+I Calculate predictions3 from bvalues3 and oos3-data.
+I report on effectiveness of:
+  predictions1
+  predictions2
+  predictions41
+  predictions3
+
+
