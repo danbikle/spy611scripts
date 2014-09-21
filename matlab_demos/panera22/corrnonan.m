@@ -4,6 +4,14 @@
 % last value of pct1hg is a NaN.
 
 function myrcorr = corrnonan(myx, myy, wndw)
+
+% If wndw size > myx size that is an error of the api-user.
+% I deal with that by returning an array of zeros.
+if(wndw > length(myx))
+  myrcorr = zeros(length(myx),1);
+  return
+end
+
 myrcorr = [];
 
 % x1 is left window boundry.

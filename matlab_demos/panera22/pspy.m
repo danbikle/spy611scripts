@@ -46,6 +46,12 @@ is1_size = 20 * 1000;
 % Know though that many of these hours actually span days due to nights and weekends:
 oos_size = 1000;
 
+% corrp is the correlation of the last corrpwindow_size predictions.
+% It is a feature in the 2nd running of LR.
+% It is possible that if the last few predictions were accurate,
+% then the next prediction might be better than average (or worse if mean-reversion is at play): 
+corrpwindow_size = 6;
+
 isoos1tables = genisoos1(spyv, boundry_date, is1_size, oos_size);
 
 is1table          = isoos1tables.is1table;
@@ -88,11 +94,10 @@ is2_size = is1_size / 2;
 % From unweighted-is1table, generate is2table, oos2table:
 is2table          = is1table(1:is2_size-2   , : ) ;
 oos2table         = is1table(is2_size+1:end , : ) ;
-is2table_weighted = weighttable(is2table)         ;
 
 % Generate is3table from is2table_weighted, oos2table
 
-is3table = genis3table(is2table_weighted,oos2table,myfeatures);
+is3table = genis3table(is2table,oos2table,myfeatures, corrpwindow_size);
 
 % is3table is now 2 features wider than is2table.
 % These 2 features, upprob1 and corrp, 
@@ -122,8 +127,8 @@ x_oos1   = table2array(x_oos1_t);
 pihat    = mnrval(bvalues4, x_oos1);
 oos3table         = oos1table;
 oos3table.upprob1 = pihat(:,2);
-wndw  = 100;
-oos3table.corrp = corrnonan(oos3table.upprob1, oos3table.pct1hg, wndw);
+
+oos3table.corrp = corrnonan(oos3table.upprob1, oos3table.pct1hg, corrpwindow_size);
 
 % Now that I have oos3table, which has the same features as is3table,
 % and I have bvalues3 which I calculated earlier from is3table,
