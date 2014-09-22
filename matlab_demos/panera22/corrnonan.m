@@ -1,7 +1,7 @@
 % /a/ks/b/matlab/panera22/corrnonan.m
 
 % I use this function to calculate running correlation on 2 vectors where
-% last value of pct1hg is a NaN.
+% last 2 values of pct1hg are NaNs.
 
 function myrcorr = corrnonan(myx, myy, wndw)
 

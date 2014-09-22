@@ -9,58 +9,9 @@ The results from upprob1 come from plain LR.
 The results are bad.
 
 The results from upprob2 come from LR2LR.
-They are better.
-
-If 
-allbt.upprob2>0.49 & allbt.upprob2<0.5
-That is bearish
-
-If 
-allbt.upprob2>0.50
-That is bullish.
-
-As upprob2 gets further above I see better results.
-That's good.
-
-Note that if pct1hg is +0.01 that translates to a gain of about $.20 for ES.
-
-The spread for ES is $0.50.
-
-I guess I'd need to capture a pct-gain of 0.10 which is 10x 0.01
-in order to make money from using LR2LR to predict ES.
-
-Shell syntax:
-
-#!/bin/bash
-
-# /a/ks/b/matlab/panera22/rpt_btr.bash
-
-cd backtest_results10_oos_pieces/
-
-sort bt*.csv|sort|uniq|grep cpdate >     allbt.csv
-sort bt*.csv|sort|uniq|grep -v cpdate >> allbt.csv
-
-# matlab -f rpt_btr.m
-
-Some Matlab syntax:
-% /a/ks/b/matlab/panera22/rpt_btr.m
-
-allbt = readtable('backtest_results10_oos_pieces/allbt.csv');
-
-'downprob1 = allbt( (allbt.upprob1<0.5) , : );'
-downprob1 = allbt( (allbt.upprob1<0.5) , : );
-mean(downprob1.pct1hg)
-sum(downprob1.pct1hg)
-
-.......
-
-
-
-Matlab results:
-
+They are better but not much:
 
 EDU>> rpt_btr
-rpt_btr
 
 ans =
 
@@ -99,12 +50,12 @@ downprob2 = allbt( (allbt.upprob2<0.47) , : );
 
 ans =
 
-    0.0504
+    0.0145
 
 
 ans =
 
-   78.1891
+   17.9576
 
 
 ans =
@@ -114,12 +65,12 @@ downprob2 = allbt( (allbt.upprob2<0.48) , : );
 
 ans =
 
-    0.0357
+    0.0096
 
 
 ans =
 
-   82.6812
+   17.7521
 
 
 ans =
@@ -129,12 +80,12 @@ downprob2 = allbt( (allbt.upprob2<0.49) , : );
 
 ans =
 
-    0.0069
+    0.0086
 
 
 ans =
 
-   24.6107
+   26.0434
 
 
 ans =
@@ -144,12 +95,12 @@ downprob2 = allbt( (allbt.upprob2<0.50) , : );
 
 ans =
 
-  -3.3164e-04
+    0.0054
 
 
 ans =
 
-   -1.9527
+   28.1841
 
 
 ans =
@@ -159,12 +110,12 @@ downprob2 = allbt( (allbt.upprob2>0.49 & allbt.upprob2<0.5) , : );
 
 ans =
 
-   -0.0138
+    0.0014
 
 
 ans =
 
-  -29.5734
+    2.8014
 
 
 ans =
@@ -174,12 +125,12 @@ upprob2 = allbt( (allbt.upprob2>0.5) , : );
 
 ans =
 
-    0.0053
+    0.0044
 
 
 ans =
 
-  116.1697
+   99.4469
 
 
 ans =
@@ -189,12 +140,12 @@ upprob2 = allbt( (allbt.upprob2>0.51) , : );
 
 ans =
 
-    0.0090
+   2.3646e-05
 
 
 ans =
 
-  155.5608
+    0.4112
 
 
 ans =
@@ -204,12 +155,12 @@ upprob2 = allbt( (allbt.upprob2>0.52) , : );
 
 ans =
 
-    0.0123
+   -0.0044
 
 
 ans =
 
-  114.7103
+  -43.8397
 
 
 ans =
@@ -219,32 +170,11 @@ upprob2 = allbt( (allbt.upprob2>0.53) , : );
 
 ans =
 
-    0.0211
+   -0.0121
 
 
 ans =
 
-   68.5590
-
-EDU>>    -0.0138*2000
-   -0.0138*2000
-
-ans =
-
-  -27.6000
-
-EDU>>    -0.0138*2000/100
-   -0.0138*2000/100
-
-ans =
-
-   -0.2760
-
-EDU>> .01 * 2000/100
-.01 * 2000/100
-
-ans =
-
-    0.2000
+  -44.8161
 
 EDU>> 
