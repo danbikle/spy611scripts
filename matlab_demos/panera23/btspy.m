@@ -21,34 +21,30 @@
 % 
 % writetable(dateprice, 'data/dateprice.csv');
 
-spyv = readtable('data/dateprice.csv');
-spyv.opnxt = vertcat(spyv.openp(2:end), NaN);
-spyv.pctg  = 100.0*(spyv.opnxt - spyv.cp)./spyv.cp;
-spyv.yval  = 1+(spyv.pctg >= 0);
-% cpma is my 1st feature:
-wndw             = 100;
-bval             = ones(1,wndw)/wndw;
-mvgavg100        = filter(bval, 1, spyv.cp);
-mvgavg100(1:100) = spyv.cp(1:100);
-spyv.cpma = spyv.cp ./ mvgavg100;
+dateprice = readtable('data/dateprice.csv');
 
-cplag      = vertcat(NaN, spyv.cp(1:end-1) )    ;
-spyv.n1dg1 = (spyv.cp - cplag) ./ cplag         ;
-spyv.n1dg2 = vertcat(NaN, spyv.n1dg1(1:end-1) ) ;
-spyv.n1dg3 = vertcat(NaN, spyv.n1dg2(1:end-1) ) ;
+% Create vectors from dates and prices:
+spyv = cr_spyv(dateprice);
 
-lag = 5;
-wlag1 = vertcat(spyv.cp(1:lag), spyv.cp(1:end - lag));
-spyv.n1wlagd = (spyv.cp - wlag1) ./ wlag1;
-spyv.n2wlagd = vertcat(spyv.n1wlagd(1:lag), spyv.n1wlagd(1:end - lag));
+% Now work towards collecting initial predictions
+% where each prediction comes from 20 years of training observations:
 
-lag = 20
-mlag1 = vertcat(spyv.cp(1:lag), spyv.cp(1:end - lag));
-spyv.n1mlagd = (spyv.cp - mlag1) ./ mlag1;
-spyv.n2mlagd = vertcat(spyv.n1mlagd(1:lag), spyv.n1mlagd(1:end - lag));
+myfeatures = {...
+'cpma'
+,'ocg'
+,'n1dg1'
+,'n1dg2'
+,'n1dg3'
+,'n1wlagd'
+,'n2wlagd'
+,'n1mlagd'
+,'n2mlagd'
+};
 
-% Features calculated now.
+ip20yr = table();
+for yr = (2013:2014)
+  ip20yr = vertcat(ip20yr, co_ip4yr(yr,spyv, myfeatures));
+end
 
-% Now work towards collecting initial predictions.
-
-
+% Report on initial-prediction effectiveness:
+myiprpt = rpt_ip(ip20yr);
