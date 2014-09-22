@@ -9,7 +9,7 @@ is1_rowcount = 20 * 1000;
 oos_rowcount = 100;
 
 % Specify how far back to look for info about previous predictions.
-corrpwindow_size = 6;
+corrpwindow_size = 9;
 
 % Starting point of is-data:
 isstart = 1

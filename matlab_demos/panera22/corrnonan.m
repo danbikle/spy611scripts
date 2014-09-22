@@ -18,13 +18,22 @@ myrcorr = [];
 % x2 is right window boundry.
 x1 = 1;
 x2 = x1+wndw-1;
+coffset = 2;
+% I use coffset to shorten corr-vec back in time by 2 observations.
+% The very last 2 observations will correspond to NaN-pct1hg.
+% So, I cant use the last 2 observations in any short vectors.
 while ( x2 <= length(myx))
-  shortx = myx(x1:x2);
-  shorty = myy(x1:x2);
-  myrcorr(x2) = corr(shortx, shorty);
+  x2off = x2 - coffset;
+  shortx = myx(x1:x2off);
+  shorty = myy(x1:x2off);
+  if(length(shortx > 2))
+    myrcorr(x2) = corr(shortx, shorty);
+  else
+    myrcorr(x2) = 0;
+  end
   if(isnan(myrcorr(x2)))
     % If I get NaN, just use the previous val:
-    myrcorr(x2) = myrcorr(x2-1)
+    myrcorr(x2) = myrcorr(x2-1);
   end
   x1 = x1 + 1;
   x2 = x2 + 1;

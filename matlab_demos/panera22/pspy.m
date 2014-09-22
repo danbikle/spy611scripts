@@ -4,33 +4,60 @@
 
 % General algorithm intent:
 
-% Get SPY dates and prices from net into spyall.
-% Generate features, future prices, and yvalues into spyv.
-% Divide spyv at boundry_date.
-% From spyv, Generate is1-data into is1table.
-% From spyv, Generate oos1-data into oos1table.
-% Calculate LR-bvalues into bvalues1 (AKA train, or fit)
-% Calculate predictions1.
+% I refer to algoart.txt for ASCII art to help me visualize pspy-data.
 
-% Specify boundry of divide of is1-data into is2-data and oos2-data.
-% From is1-data and boundry2 generate is2-data, oos2-data.
+% I get SPY dates and prices from net into spyall.
+% I generate features, future prices, and yvalues into spyv.
+% I divide spyv into 4 pieces using boundry1, boundry2, and boundry3.
+% boundry1 is 103 observations before now.
+% I intend to judge the effectiveness of LR2LR on 100 recent observations,
+% using recent data.
 
-% Calculate LR-bvalues into bvalues2.
-% Calculate predictions2.
+% The outcome of the last 3 observations should not be known yet.
 
-% Merge predictions2, corrp, and oos2-data into is3-data.
+% boundry2 is 10,000 observations before boundry1.
+% boundry3 is 10,000 observations before boundry2.
 
-% From is3-data, Calculate LR-bvalues into bvalues3.
+% Note that boundry1 is fixed while LR2LR runs.
 
-% Declare a copy of oos2-data to be is4-data.
+% Note that boundry2, and boundry3 maintain their 10,000 observation distance.
 
-% From is4 calculate LR-bvalues into bvalues4.
+% During the process of generating initial predictions between boundry1 and boundry2,
+% I will slide boundry2, and boundry3 to the right as I calculate initial predictions.
+% The amount of each slide is controlled by variable: oospieces.
+% Currently oospieces is set to 10, so boundry2-boundry3 will slide 10 times before
+% boundry2 encounters boundry1.
 
-% Calculate predictions41 from bvalues4 and oos1-data.
+% The observations between boundry2 and boundry3 are called is2-data.
 
-% Merge predictions41 with oos1-data into oos3-data.
+% From spyv, I generate is2-data into is2table.
 
-% Calculate predictions3 from bvalues3 and oos3-data.
+% Before and during the calculation of initial predictions,
+% I call their container, oos2-data.
+
+% After I fill oos2-data with predictions,
+% I declare that I have a new feature: upprob1.
+
+% I calculate the correlation between upprob1 and pct1hg and declare it to be another new feature:
+% corrp
+
+% Note that corrp only looks back 9 observations.
+% This lookback-amount could be studied later.
+% It is controlled in the code as variable: corrpwindow_rowcount.
+% 9 observations feels right but perhaps it could be larger.
+% On spy611.com I have corrpwindow_rowcount set to 100 which might be too large.
+
+% Next, I declare that the observations between boundry2 and boundry3 are no longer oos2-data.
+% They can now be used to train the 2nd pass of LR.
+
+% I declare them to be is3-data.
+
+% Now that is3-data has 2 new features, I need to add 2 new features to the 103-oos-observations
+% which lie to the right of boundry1.
+
+% I add them the same way I added them to is3-data.
+
+% Next, I use a final run of LR to predict the 103-oos-observations.
 
 
 % debug
@@ -40,25 +67,9 @@
 spyv = readtable('data/spyv.csv');
 % debug
 
-boundry_date = datenum([2014 08 01]);
-is1_size = 20 * 1000;
-% I size oos data at about 500 hours.
-% Know though that many of these hours actually span days due to nights and weekends:
-oos_size = 1000;
-
-% corrp is the correlation of the last corrpwindow_size predictions.
-% It is a feature in the 2nd running of LR.
-% It is possible that if the last few predictions were accurate,
-% then the next prediction might be better than average (or worse if mean-reversion is at play): 
-corrpwindow_size = 6;
-
-isoos1tables = genisoos1(spyv, boundry_date, is1_size, oos_size);
-
-is1table          = isoos1tables.is1table;
-is1table_weighted = isoos1tables.is1table_weighted;
-oos1table         = isoos1tables.oos1table;
-
-% Train, using is1table:
+% I use this to tell LR2LR how far back to look in time 
+% at recent predictions when it calculates the corrp feature:
+corrpwindow_rowcount = 9
 
 myfeatures = {...
 'timegap1' ...
@@ -69,40 +80,29 @@ myfeatures = {...
 ,'nlag1'   ...
 }
 
-bvalues1 = trainnow(is1table_weighted, myfeatures)
+% I define boundries by counting backwards from now:
+rowcount_spyv = rowcount(spyv)
+boundry1 = rowcount_spyv - 103
+boundry2 = boundry1 - 10000
+boundry3 = boundry2 - 10000
+% Notice that boundry1 > boundry2 > boundry3 
+% Note that boundry1 is newer than boundry2 is newer than boundry3
 
-% Predict, using oos1table:
+% Define my tables moving from older to newer to now:
+is2table  = spyv(boundry3:boundry2,      :);
+oos2table = spyv(boundry2:boundry1,      :);
+oos1table = spyv(boundry1:rowcount_spyv, :);
 
-predictions1 = predictnow(oos1table, myfeatures, bvalues1);
+% Generate is3table from is2table, oos2table
 
-% LR-report:
-downg_prob = predictions1((predictions1.pct1hg < 0.0),{'upprob1'});
-upg_prob   = predictions1((predictions1.pct1hg > 0.0),{'upprob1'});
-mean_downg_prob = mean(downg_prob.upprob1)
-mean_upg_prob   = mean(upg_prob.upprob1)
-summary(downg_prob)
-summary(upg_prob)
-
-
-% Specify boundry of divide of is1 data into is2 data and oos2 data.
-is2_size = is1_size / 2;
-% Intent:
-% Cut is1 data in half.
-% First  half will become is2.
-% Second half will become oos2.
-
-% From unweighted-is1table, generate is2table, oos2table:
-is2table          = is1table(1:is2_size-2   , : ) ;
-oos2table         = is1table(is2_size+1:end , : ) ;
-
-% Generate is3table from is2table_weighted, oos2table
-
-is3table = genis3table(is2table,oos2table,myfeatures, corrpwindow_size);
+is3table = genis3table(is2table, oos2table, myfeatures, corrpwindow_rowcount);
 
 % is3table is now 2 features wider than is2table.
 % These 2 features, upprob1 and corrp, 
 % contain introspective information about the effectiveness of LR.
-myfeatures2 = [myfeatures, {'upprob1','corrp'}];
+% myfeatures2 = myfeatures
+% myfeatures2 = [myfeatures, {'upprob1'}]
+myfeatures2 = [myfeatures, {'upprob1','corrp'}]
 
 % Generate bvalues3 from is3table.
 is3table_weighted = weighttable(is3table);
@@ -128,7 +128,7 @@ pihat    = mnrval(bvalues4, x_oos1);
 oos3table         = oos1table;
 oos3table.upprob1 = pihat(:,2);
 
-oos3table.corrp = corrnonan(oos3table.upprob1, oos3table.pct1hg, corrpwindow_size);
+oos3table.corrp = corrnonan(oos3table.upprob1, oos3table.pct1hg, corrpwindow_rowcount);
 
 % Now that I have oos3table, which has the same features as is3table,
 % and I have bvalues3 which I calculated earlier from is3table,
@@ -138,23 +138,5 @@ x_oos3_t = oos3table(:, myfeatures2);
 x_oos3   = table2array(x_oos3_t);
 pihat    = mnrval(bvalues3, x_oos3);
 results_table         = oos3table;
-results_table.upprob2 = pihat(:,2);
-
-% report results:
-downprediction_gains1 = results_table( (results_table.upprob1 < 0.5) , {'pct1hg'});
-upprediction_gains1   = results_table( (results_table.upprob1 > 0.5) , {'pct1hg'});
-downprediction_gains2 = results_table( (results_table.upprob2 < 0.5) , {'pct1hg'});
-upprediction_gains2   = results_table( (results_table.upprob2 > 0.5) , {'pct1hg'});
-
-summary(downprediction_gains1)
-summary(upprediction_gains1)
-
-summary(downprediction_gains2)
-summary(upprediction_gains2)
-
-sum(downprediction_gains1.pct1hg ( not ( isnan ( downprediction_gains1.pct1hg ))))
-sum(upprediction_gains1.pct1hg ( not ( isnan ( upprediction_gains1.pct1hg ))))
-
-sum(downprediction_gains2.pct1hg ( not ( isnan ( downprediction_gains2.pct1hg ))))
-sum(upprediction_gains2.pct1hg ( not ( isnan ( upprediction_gains2.pct1hg ))))
+results_table.upprob2 = round(1000*pihat(:,2))/1000;
 

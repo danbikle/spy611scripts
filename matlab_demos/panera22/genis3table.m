@@ -12,8 +12,9 @@ function tableout = genis3table(is2table, oos2table, myfeatures, corrpwindow_siz
 % predictions2 = predictnow(oos2table, myfeatures, bvalues2);
 
 % I cut my oos-data into this many pieces:
+% 10 pieces are better than 100:
+% oospieces = 100
 oospieces = 10
-oospieces = 100
 
 % predict_wide_oos() should be more effective than vanilla LR; why?
 % Because it tries to keep gap between is-end and oos-start less than oos_chunk_length:

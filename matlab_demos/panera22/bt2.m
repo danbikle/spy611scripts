@@ -8,7 +8,7 @@
 % is1_rowcount = 20 * 1000;
 % Set the size of each oos-table:
 % oos_rowcount = 100;
-% corrpwindow_rowcount = 6;
+% corrpwindow_rowcount = 9;
 
 % spyv = readtable('data/spyv.csv');
 
