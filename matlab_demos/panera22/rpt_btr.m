@@ -1,6 +1,6 @@
 % /a/ks/b/matlab/panera22/rpt_btr.m
 
-allbt = readtable('backtest_results10_oos_pieces/allbt.csv');
+allbt = readtable('backtest_results/allbt.csv');
 
 'downprob1 = allbt( (allbt.upprob1<0.5) , : );'
 downprob1 = allbt( (allbt.upprob1<0.5) , : );
