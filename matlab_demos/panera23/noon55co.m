@@ -1,30 +1,39 @@
-% /a/ks/b/matlab/panera23/btspy.m
+% /a/ks/b/matlab/panera23/noon55co.m
 
-% I use this script as a main entry point into my effort 
-% to backtest close-to-open predictions of spy.
+% I use this script to issue close-to-open predictions of SPY at 12:55.
 
 % Get some data:
 
-% startDate = datenum( [ 1993 1 1 ] );
-% endDate = now;
-% symbl = 'SPY';
-% freq = 'd';
-% 
-% % cp is closing-price:
-% [ydate, cp, openp, lowp, highp, volume, closeadj] = StockQuoteQuery(symbl, startDate, endDate, freq);
-% 
-% dateprice = table();
-% dateprice.ydatestr = datestr(ydate,'yyyy-mm-dd');
-% dateprice.ydate    = ydate;
-% dateprice.openp    = openp;
-% dateprice.cp       = cp;
-% 
-% writetable(dateprice, 'data/dateprice.csv');
+startDate = datenum( [ 1993 1 1 ] );
+endDate = now;
+symbl = 'SPY';
+freq = 'd';
+
+% cp is closing-price:
+[ydate, cp, openp, lowp, highp, volume, closeadj] = StockQuoteQuery(symbl, startDate, endDate, freq);
+
+dateprice = table();
+dateprice.ydatestr = datestr(ydate,'yyyy-mm-dd');
+dateprice.ydate    = ydate;
+dateprice.openp    = openp;
+dateprice.cp       = cp;
+
+writetable(dateprice, 'data/dateprice.csv');
 
 dateprice = readtable('data/dateprice.csv');
 
+new_lastrow = table();
+noon55price;
+% Add estimated closing price I expect to see in 5 minutes:
+new_lastrow.ydatestr = noon55_datestr;
+new_lastrow.ydate    = noon55_date;
+new_lastrow.openp    = noon55_openp;
+new_lastrow.cp       = noon55_price;
+
+new_dateprice = vertcat(dateprice, new_lastrow);
+
 % Create vectors from dates and prices:
-spyv = cr_spyv(dateprice);
+spyv = cr_spyv(new_dateprice);
 
 % Now work towards collecting initial predictions
 % where each prediction comes from 20 years of training observations:
@@ -39,9 +48,6 @@ myfeatures = {...
 ,'n2wlagd'
 ,'n1mlagd'
 ,'n2mlagd'
-,'pctg1'
-,'pctg1ma10'
-,'pctg1ma100'
 }' ;
 
 ip20yr = table();
@@ -54,7 +60,7 @@ myiprpt = rpt_ip(ip20yr);
 
 % Make copy of spyv and cut it into 3 pieces:
 % boundry3 ... piece3 ... boundry2 ... piece2 ... boundry1 ... piece1 ... end
-boundry1 = rowcount(spyv) - 200;
+boundry1 = rowcount(spyv) - 100;
 boundry2 = round(boundry1/2);
 boundry3 = 1;
 

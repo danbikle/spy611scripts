@@ -21,32 +21,48 @@ function spyv = cr_spyv(dateprice)
 
 spyv = dateprice;
 
-
-spyv.opnxt = vertcat(spyv.openp(2:end), NaN);
+spyv.opnxt = leadn(1, spyv.openp);
 spyv.pctg  = 100.0*(spyv.opnxt - spyv.cp)./spyv.cp;
-spyv.yval  = 1+(spyv.pctg >= 0);
-% cpma is my 1st feature:
-wndw             = 100;
-bval             = ones(1,wndw)/wndw;
-mvgavg100        = filter(bval, 1, spyv.cp);
+is_spyv = spyv( ( spyv.ydate < datenum( [2013 1 1] )),:);
+median_pctg = median(is_spyv.pctg);
+spyv.yval  = 1+(spyv.pctg >= median_pctg);
+% spyv.yval  = 1+(spyv.pctg >= 0.0);
+
+% Get the last pctg:
+spyv.pctg1 = lagn(1,spyv.pctg);
+
+% Get mvgavg of last 10 pctg1:
+wndw                 = 10;
+bval10               = ones(1,wndw)/wndw;
+spyv.pctg1ma10       = filter(bval10, 1, spyv.pctg1);
+spyv.pctg1ma10(1:10) = spyv.pctg1(1:10);
+
+% Get mvgavg of last 100 pctg1:
+wndw                   = 100;
+bval100                = ones(1,wndw)/wndw;
+spyv.pctg1ma100        = filter(bval100, 1, spyv.pctg1);
+spyv.pctg1ma100(1:100) = spyv.pctg1(1:100);
+
+% cpma is my next feature, borrow params from last mvavg calculation:
+mvgavg100        = filter(bval100, 1, spyv.cp);
 mvgavg100(1:100) = spyv.cp(1:100);
 spyv.cpma = spyv.cp ./ mvgavg100;
 
 spyv.ocg   = (spyv.cp - spyv.openp) ./ spyv.openp ;
-cplag      = vertcat(spyv.cp(1), spyv.cp(1:end-1) )    ;
+cplag      = lagn(1, spyv.cp);
 spyv.n1dg1 = (spyv.cp - cplag) ./ cplag         ;
-spyv.n1dg2 = vertcat(0, spyv.n1dg1(1:end-1) ) ;
-spyv.n1dg3 = vertcat(0, spyv.n1dg2(1:end-1) ) ;
+spyv.n1dg2 = lagn(1, spyv.n1dg1);
+spyv.n1dg3 = lagn(1, spyv.n1dg2);
 
 lag = 5;
-wlag1 = vertcat(spyv.cp(1:lag), spyv.cp(1:end - lag));
+wlag1 = lagn(lag, spyv.cp);
 spyv.n1wlagd = (spyv.cp - wlag1) ./ wlag1;
-spyv.n2wlagd = vertcat(spyv.n1wlagd(1:lag), spyv.n1wlagd(1:end - lag));
+spyv.n2wlagd = lagn(lag, spyv.n1wlagd);
 
-lag = 20
-mlag1 = vertcat(spyv.cp(1:lag), spyv.cp(1:end - lag));
+lag = 20;
+mlag1 = lagn(lag, spyv.cp);
 spyv.n1mlagd = (spyv.cp - mlag1) ./ mlag1;
-spyv.n2mlagd = vertcat(spyv.n1mlagd(1:lag), spyv.n1mlagd(1:end - lag));
+spyv.n2mlagd = lagn(lag, spyv.n1mlagd);
 
 % Features calculated now.
 
