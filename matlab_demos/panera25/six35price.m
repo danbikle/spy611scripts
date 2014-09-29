@@ -12,7 +12,7 @@
 
 six35_date = datenum([2014 9 29])
 six35_datestr = datestr(six35_date, 'yyyy-mm-dd')
-six35_openp = 199.99
+six35_openp = 197.05
 
 now_is = datestr(now,'yyyy-mm-dd hh')
 
