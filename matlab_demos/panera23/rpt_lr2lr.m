@@ -18,17 +18,17 @@ down_up2 = rpt((rpt.upprob2 < 0.5) , :);
 up_up1 = rpt((rpt.upprob1 > 0.5) , :);
 up_up2 = rpt((rpt.upprob2 > 0.5) , :);
 
-mean( nonan( down_up1.upprob1))
-mean( nonan( down_up2.upprob2))
+mean( nonan( down_up1.pctg))
+mean( nonan( down_up2.pctg))
 
-mean( nonan( up_up1.upprob1))
-mean( nonan( up_up2.upprob2))
+mean( nonan( up_up1.pctg))
+mean( nonan( up_up2.pctg))
 
-sum( nonan( down_up1.upprob1))
-sum( nonan( down_up2.upprob2))
+sum( nonan( down_up1.pctg))
+sum( nonan( down_up2.pctg))
 
-sum( nonan( up_up1.upprob1))
-sum( nonan( up_up2.upprob2))
+sum( nonan( up_up1.pctg))
+sum( nonan( up_up2.pctg))
 
 my_lr2lr_rpt = rpt;
 
