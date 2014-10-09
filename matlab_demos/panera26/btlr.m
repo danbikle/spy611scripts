@@ -3,22 +3,34 @@
 % % I use this script to backtest lr on GSPC
 % 
 
+% params:
 
-startDate = datenum( [ 1950 1 1 ] );
-endDate = now;
-symbl = '^GSPC';
-freq = 'd';
+is_rowcount   = 242;
+is_rowcount_s = num2str(is_rowcount);
+corrnfeat     = 'corrn09';
+features      = {'n1dg1','n2dg1',corrnfeat};
 
-% cp is closing-price:
-[ydate, cp, openp, lowp, highp, volume, closeadj] = StockQuoteQuery(symbl, startDate, endDate, freq);
+% Use params to label results:
 
-dateprice = table();
-dateprice.ydatestr = datestr(ydate,'yyyy-mm-dd');
-dateprice.ydate    = ydate;
-dateprice.openp    = openp;
-dateprice.cp       = cp;
+png1 = strcat('data/plot_ipall_rc', is_rowcount_s,'_',corrnfeat,'.png');
+png2 = strcat('data/plot_ip2530_rc',is_rowcount_s,'_',corrnfeat,'.png');
+csv1 = strcat('data/ip_rc',         is_rowcount_s,'_',corrnfeat,'.csv');
 
-writetable(dateprice, 'data/dateprice.csv');
+% startDate = datenum( [ 1950 1 1 ] );
+% endDate = now;
+% symbl = '^GSPC';
+% freq = 'd';
+% 
+% % cp is closing-price:
+% [ydate, cp, openp, lowp, highp, volume, closeadj] = StockQuoteQuery(symbl, startDate, endDate, freq);
+% 
+% dateprice = table();
+% dateprice.ydatestr = datestr(ydate,'yyyy-mm-dd');
+% dateprice.ydate    = ydate;
+% dateprice.openp    = openp;
+% dateprice.cp       = cp;
+% 
+% writetable(dateprice, 'data/dateprice.csv');
 
 dateprice = readtable('data/dateprice.csv');
 
@@ -37,6 +49,10 @@ n2dg1   = (cp-lag2) ./ lag2;
 n1dg2   = lagn(1,n1dg1);
 
 corrn05 = cr_corrp(n1dg2, n1dg1,  5);
+corrn06 = cr_corrp(n1dg2, n1dg1,  6);
+corrn07 = cr_corrp(n1dg2, n1dg1,  7);
+corrn08 = cr_corrp(n1dg2, n1dg1,  8);
+corrn09 = cr_corrp(n1dg2, n1dg1,  9);
 
 n1dg = (lead-cp) ./ cp;
 
@@ -47,22 +63,24 @@ ccv.n1dg1   = n1dg1  ;
 ccv.n1dg2   = n1dg2  ;
 ccv.n2dg1   = n2dg1  ;
 ccv.corrn05 = corrn05;
+ccv.corrn06 = corrn06;
+ccv.corrn07 = corrn07;
+ccv.corrn08 = corrn08;
+ccv.corrn09 = corrn09;
 
 % future:
 ccv.n1dg   = n1dg ;
 ccv.yval   = yval ;
+% Vectors now built, move on to collecting predictions.
 
-% Specify length of is_data:
-is_rowcount = 242;
-
-% Create initial predictions:
-features = {'n1dg1','n2dg1','corrn05'};
 
 % Initial place in the vectors I start collecting predictions:
 ccv_start = is_rowcount + 2;
+% That should be a date in the 1950s.
 
 % The place in the vectors where I stop collecting predictions:
 ccv_end    = length(ccv.ydate);
+% That should be a date near today.
 
 initial_predictions = table();
 
@@ -75,6 +93,7 @@ for i = (ccv_start:ccv_end)
 end
 
 writetable(initial_predictions, 'data/ip.csv');
+writetable(initial_predictions, csv1);
 
 % Plot all predictions:
 
@@ -138,8 +157,7 @@ legend( 'GSPC'...
   ,'GSPC(lt0.48,gt0.52)' ...
   ,'Location', 'NorthWest');
 
-print (myfhandle, '-dpng', 'data/plot_ip.png');
-
+print (myfhandle, '-dpng', png1);
 
 % Look at previous 2530 observations:
 xy1 = xy1(end-2530:end , :);
@@ -205,7 +223,7 @@ legend( 'GSPC'...
   ,'GSPC(lt0.48,gt0.52)' ...
   ,'Location', 'NorthWest');
 
-print (myfhandle, '-dpng', 'data/plot_ip2530.png');
+print (myfhandle, '-dpng', png2);
 
 'done'
 
